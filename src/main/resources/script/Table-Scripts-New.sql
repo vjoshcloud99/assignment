@@ -31,7 +31,7 @@ CREATE TABLE `assignment`.`cycle` (
   `businessYearId` INT NULL,
   `periodName` VARCHAR(45) NULL,
   `fromDate` DATE NULL,
-  `toDate` INT NULL,
+  `toDate` DATE NULL,
   `frequencyId` INT NULL,
   PRIMARY KEY (`cycleId`),
   INDEX `FK_CYCLE_PERIOD_BYI_idx` (`businessYearId` ASC) ,
