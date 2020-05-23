@@ -15,28 +15,46 @@ public class Frequency {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "frequencyId")
 	private Long frequencyId;
-	@Column(name = "freqencyName")
-	private String freqencyName;
 
+	@Column(name = "freqencyName")
+	private String frequencyName;
+
+	/*@ManyToMany(mappedBy = "frequencyList", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST,
+			CascadeType.MERGE })
+	private List<Period> periodList = new ArrayList<>();
+	*/
 	public Frequency() {
 		super();
 	}
 
-	public Frequency(String freqencyName) {
+	public Frequency(Long frequencyId, String frequencyName) {
 		super();
-		this.freqencyName = freqencyName;
+		this.frequencyId = frequencyId;
+		this.frequencyName = frequencyName;
 	}
+
+	public void setFrequencyId(Long frequencyId) {
+		this.frequencyId = frequencyId;
+	}
+
+	public void setFrequencyName(String frequencyName) {
+		this.frequencyName = frequencyName;
+	}
+
+	/*public void setPeriod(List<Period> periodList) {
+		this.periodList = periodList;
+	}*/
 
 	public Long getFrequencyId() {
 		return frequencyId;
 	}
 
-	public String getFreqencyName() {
-		return freqencyName;
+	public String getFrequencyName() {
+		return frequencyName;
 	}
 
-	public void setFreqencyName(String freqencyName) {
-		this.freqencyName = freqencyName;
-	}
-
+	/*	public List<Period> getPeriod() {
+			return periodList;
+		}
+	*/
 }

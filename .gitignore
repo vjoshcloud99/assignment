@@ -8,6 +8,11 @@ mvnw.cmd
 .project
 /target
 .mvn
+mvnw.cmd
+mvnw
+.settings
+/target
+
 
 ### STS ###
 .apt_generated
