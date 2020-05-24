@@ -11,7 +11,7 @@ import com.frequency.entity.Cycle;
 public interface CycleRepository extends JpaRepository<Cycle, Long> {
 
 	List<Cycle> findByBusinessYearId(Long businessId);
-
 	List<Cycle> findByFrequencyId(Long frequencyId);
+	List<Cycle> findByPeriodAndFrequency(Long businessId, Long frequencyId);
 
 }

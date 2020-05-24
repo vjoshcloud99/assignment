@@ -19,10 +19,10 @@ import javax.persistence.TemporalType;
 @Table(name = "cycle")
 @NamedQuery(name = "Cycle.findByBusinessYearId", query = "SELECT c FROM Cycle c WHERE c.businessYearId.businessYearId =?1")
 @NamedQuery(name = "Cycle.findByFrequencyId", query = "SELECT c FROM Cycle c WHERE c.frequencyId.frequencyId =?1")
+@NamedQuery(name = "Cycle.findByPeriodAndFrequency", query = "SELECT c FROM Cycle c WHERE c.businessYearId.businessYearId =?1 AND c.frequencyId.frequencyId =?2")
 public class Cycle implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +32,10 @@ public class Cycle implements Serializable {
 	
 	@JoinColumn(name = "frequency_id", referencedColumnName = "frequency_id")
 	@ManyToOne()
-	//@Column(name = "frequencyId")
 	private Frequency frequencyId;
 
 	@JoinColumn(name = "business_year_id", referencedColumnName = "business_year_id")
 	@ManyToOne
-	//@Column(name = "businessYearId")
 	private Period businessYearId;
 	
 	@Column(name = "period_name")
@@ -51,11 +49,6 @@ public class Cycle implements Serializable {
 	@Column(name = "to_date")
 	private Date toDate;
 
-	
-
-	/*@ManyToOne
-	@JoinColumn(name = "businessYearId")
-	private Period period;*/
 
 	public Cycle() {
 		super();
@@ -71,13 +64,6 @@ public class Cycle implements Serializable {
 		this.frequencyId = frequencyId;
 	}
 
-	/*	public Period getPeriod() {
-			return period;
-		}
-	
-		public void setPeriod(Period period) {
-			this.period = period;
-		}*/
 
 	public Long getCycleId() {
 		return cycleId;
