@@ -1,17 +1,14 @@
 package com.frequency;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.frequency.entity.Cycle;
-import com.frequency.entity.Frequency;
-import com.frequency.entity.Period;
 import com.frequency.repository.FrequencyRepository;
 import com.frequency.repository.PeriodRepository;
 import com.frequency.service.CycleService;
@@ -27,7 +24,7 @@ public class FrequencyReportApplication implements CommandLineRunner {
 	@Autowired
 	private FrequencyRepository frequencyRepository;
 	
-	@Autowired
+	@Autowired(required = true)
 	private CycleService  cycleService ;
 
 	public static void main(String[] args) {
@@ -35,21 +32,30 @@ public class FrequencyReportApplication implements CommandLineRunner {
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void run(String... args) throws Exception {
-
-		Period period = periodRepository.getOne(3L);
+		/*
+		
+		Period period = periodRepository.getOne(2L);
 		log.info("id=  " + period.getBusinessYearId() + period.getYearUsedFor());
 		
 		
 		Frequency frequency = frequencyRepository.getOne(1L);
-		 log.info("id=  " + frequency.getFrequencyId() + frequency.getFrequencyName());
-		 
-		 List<Cycle> prepareCycleData = cycleService.prepareCycleData(period, frequency);
-		 
-		 
+		log.info("id=  " + frequency.getFrequencyId() + frequency.getFrequencyName());
 		
-
-	}
+		List<Cycle> prepareCycleData = cycleService.prepareCycleData(period, frequency);
+		prepareCycleData.forEach(c-> {
+		log.info("cycle id=  "+c.getCycleId());
+		log.info("businessYearId=  "+c.getBusinessYearId());
+		log.info("frequencyID =  "+c.getFrequencyId());
+		log.info("fromDate= "+c.getFromDate());
+		log.info("toDate= "+c.getToDate());
+		log.info("periodName=  "+c.getPeriodName());
+		});
+		
+		
+		
+		*/}
 
 	/*	@Override
 		public void run(String... args) throws Exception {
