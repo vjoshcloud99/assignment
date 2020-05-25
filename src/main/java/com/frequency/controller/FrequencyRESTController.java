@@ -41,8 +41,8 @@ public class FrequencyRESTController {
 	}
 
 	@GetMapping("cycles/period/{businessyearid}/frequency/{frequencyid}" )
-	public  ResponseEntity<List<Cycle>>  findByPeriodAndFrequency(@PathVariable("businessYearId") Long businessYearId,
-													 @PathVariable("frequencyId") Long frequencyId) {
+	public  ResponseEntity<List<Cycle>>  findByPeriodAndFrequency(@PathVariable("businessyearid") Long businessYearId,
+													 @PathVariable("frequencyid") Long frequencyId) {
 
 		List<Cycle> cycles = cycleService.findByPeriodAndFrequency(businessYearId, frequencyId);
 

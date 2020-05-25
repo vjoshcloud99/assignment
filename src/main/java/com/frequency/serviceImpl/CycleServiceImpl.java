@@ -2,11 +2,12 @@ package com.frequency.serviceImpl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,7 @@ import com.frequency.service.CycleService;
 @Transactional
 public class CycleServiceImpl implements CycleService {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	// private Logger log = LoggerFactory.getLogger(this.getClass());
 
 	static SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -37,23 +38,53 @@ public class CycleServiceImpl implements CycleService {
 	private PeriodRepository periodRepository;
 
 	@Override
-	public List<Cycle> findByPeriodAndFrequency(Long businessYearId, Long frequencyId){
+	public List<Cycle> findByPeriodAndFrequency(Long businessYearId, Long frequencyId) {
 		List<Cycle> cyclesList = cycleRepository.findByPeriodAndFrequency(businessYearId, frequencyId);
 		return cyclesList;
 	}
 
 	@Override
-	public List<Cycle> findByBusinessYearId(Long businessYearId){
+	public List<Cycle> findByBusinessYearId(Long businessYearId) {
 
 		List<Cycle> cyclesList = cycleRepository.findByBusinessYearId(businessYearId);
 		return cyclesList;
 	}
 
 	@Override
-	public List<Cycle> findByFrequencyId(Long frequencyId){
+	public List<Cycle> findByFrequencyId(Long frequencyId) {
 
 		List<Cycle> cyclesList = cycleRepository.findByFrequencyId(frequencyId);
 		return cyclesList;
+	}
+
+	private StartEndDate prepareDate(String startDateStr, String endDateStr) {
+		SimpleDateFormat sd = new SimpleDateFormat("dd-MMM-yyyy");
+		try {
+			int CurrentYear = Calendar.getInstance().get(Calendar.YEAR);
+			Date startDate = sd.parse(startDateStr + "-" + CurrentYear);
+
+			Calendar startCal = Calendar.getInstance();
+			startCal.setTime(startDate);
+
+			Date endDate = sd.parse(endDateStr + "-" + CurrentYear);
+
+			Calendar endCal = Calendar.getInstance();
+			endCal.setTime(endDate);
+
+			if (!startCal.before(endCal))
+				endCal.add(Calendar.YEAR, 1);
+
+			System.out.println(sd.format(startCal.getTime()));
+			System.out.println(sd.format(endCal.getTime()));
+
+			StartEndDate startEndDate = new StartEndDate(startCal.getTime(), endCal.getTime());
+
+			return startEndDate;
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	@Override
@@ -63,43 +94,44 @@ public class CycleServiceImpl implements CycleService {
 		Frequency frequency = frequencyRepository.getOne(frequencyId);
 
 		try {
-			String strFromDate = period.getFromDate(); // dd-MMM formatted string need to convert into actual dates based on some logic
-			String strEndDate = period.getToDate(); // dd-MMM formatted string need to convert into actual dates based on some logic
-			// ToDO Need to change these hard coded dates as per period from and end date
-			Date startDate =  sd.parse("2020-04-01");
-			Date endDate =  sd.parse("2021-03-31");
+
+			String strFromDate = period.getFromDate(); 
+			String strEndDate = period.getToDate(); 
+			StartEndDate prepareDate = prepareDate(strFromDate, strEndDate);
+			Date startDate = prepareDate.getStartDate();
+			Date endDate = prepareDate.getEndDate();
+
 			List<Cycle> cycles = prepareCyclesData(startDate, endDate, period, frequency);
 
 			cycleRepository.saveAll(cycles);
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-
-	public List<Cycle> prepareCyclesData (Date start, Date end, Period period, Frequency frequency) {
+	public List<Cycle> prepareCyclesData(Date start, Date end, Period period, Frequency frequency) {
 
 		List<Cycle> cycles = new ArrayList<>();
 		String periodName;
-		switch (frequency.getFrequencyName()){
-			case "Daily":
-				periodName = "Day";
-				break;
-			case "Weekly":
-				periodName = "Week";
-				break;
-			case "Bi-Weekly":
-				periodName = "Bi-Week";
-				break;
-			case "Semi-Monthly":
-				periodName = "Semi-Month";
-				break;
-			case "Monthly":
-				periodName = "Month";
-				break;
-			default:
-				periodName = "Day";
+		switch (frequency.getFrequencyName()) {
+		case "Daily":
+			periodName = "Day";
+			break;
+		case "Weekly":
+			periodName = "Week";
+			break;
+		case "Bi-Weekly":
+			periodName = "Bi-Week";
+			break;
+		case "Semi-Monthly":
+			periodName = "Semi-Month";
+			break;
+		case "Monthly":
+			periodName = "Month";
+			break;
+		default:
+			periodName = "Day";
 		}
 
 		Calendar startCalendar = GregorianCalendar.getInstance();
@@ -118,22 +150,22 @@ public class CycleServiceImpl implements CycleService {
 			cycle.setBusinessYearId(period);
 			cycle.setFrequencyId(frequency);
 //			System.out.print(periodName + count + ", Start: " + sd.format(startCalendar.getTime()));
-			if(frequency.getFrequencyId() == 1){ // Daily
+			if (frequency.getFrequencyId() == 1) { // Daily
 				startCalendar.add(Calendar.DAY_OF_MONTH, 1);
 			}
-			if(frequency.getFrequencyId() == 2) { // Weekly
+			if (frequency.getFrequencyId() == 2) { // Weekly
 				startCalendar.add(Calendar.DAY_OF_MONTH, 7);
 			}
 
-			if(frequency.getFrequencyId() == 3) { // Bi-weekly
+			if (frequency.getFrequencyId() == 3) { // Bi-weekly
 				startCalendar.add(Calendar.DAY_OF_MONTH, 14);
 			}
 
-			if(frequency.getFrequencyId() == 4) { // Semi-Monthly
+			if (frequency.getFrequencyId() == 4) { // Semi-Monthly
 				startCalendar.add(Calendar.DAY_OF_MONTH, 15);
 			}
 
-			if(frequency.getFrequencyId() == 5) { // Monthly
+			if (frequency.getFrequencyId() == 5) { // Monthly
 				startCalendar.add(Calendar.MONTH, 1);
 			}
 
@@ -145,6 +177,25 @@ public class CycleServiceImpl implements CycleService {
 		}
 
 		return cycles;
+	}
+
+}
+
+class StartEndDate {
+	Date startDate;
+	Date endDate;
+
+	StartEndDate(Date startDate, Date endDate) {
+		this.startDate = startDate;
+		this.endDate = endDate;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
 	}
 
 }
